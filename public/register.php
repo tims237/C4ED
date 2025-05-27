@@ -1,6 +1,6 @@
 <?php
 //on inclut la base de données
-requered_once '../config/config.php';
+require_once '../config/config.php';
 //on valide les donnees  du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = $_POST['nom'] ?? '';
