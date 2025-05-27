@@ -2,6 +2,7 @@
 //on inclut la base de données
 require_once '../config/config.php';
 //on valide les donnees  du formulaire
+$errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom'] ?? '');
     $prenom = trim($_POST['prenom'] ?? '');
