@@ -6,47 +6,50 @@
     require_once '../includes/authentification.php';
     require_once '../includes/helpers.php';
 
+    // Redirige si déjà connecté
     if (is_logged_in()) {
         redirect($_SESSION['user_role'] === 'admin' ? 'admin_panel.php' : 'dashboard.php');
     }
 
-    // on vérifie si l'utilisateur est connecté
+    // Génère le token CSRF si besoin
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
+
     $errors = [];
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // on récupère les données du formulaire
         $email = trim($_POST['email'] ?? '');
         $password = trim($_POST['password'] ?? '');
         $csrf_token = $_POST['csrf_token'] ?? '';
+
         // on vérifie le token CSRF
         if (empty($csrf_token) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
             $errors[] = "Token CSRF invalide";
         }
-        // on vérifie  si tous les champs sont remplis
-        if (empty($email) || empty($password)){
-            $errors[] = 'Veuillez remplir tous les champs' ;
+        // on vérifie si tous les champs sont remplis
+        if (empty($email) || empty($password)) {
+            $errors[] = 'Veuillez remplir tous les champs';
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Email invalide";
         }
         // on recherche le mail de l'utilisateur dans la base de données
-        if (empty($errors)) 
-        {
-            $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE email = :email");
+        if (empty($errors)) {
+            // Utilise la table users et le champ password
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
             $stmt->execute(['email' => $email]);
-            $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
-            // si l'utilisateur existe et que le mot de passe est correct
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($utilisateur && password_verify($password, $utilisateur['mot_de_passe'])) 
-            {
+            // si l'utilisateur existe et que le mot de passe est correct
+            if ($user && password_verify($password, $user['password'])) {
                 session_regenerate_id(true);
-                $_SESSION['user_id'] = $utilisateur['id'];
-                $_SESSION['user_email'] = $utilisateur['email'];
-                $_SESSION['user_role'] = $utilisateur['role'];
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_email'] = $user['email'];
+                $_SESSION['user_role'] = $user['role'];
+                $_SESSION['user_ville'] = $user['ville'];
                 // on redirige selon le role 
-                if ($utilisateur['role'] === 'admin') {
+                if ($user['role'] === 'admin') {
                     redirect("admin_panel.php");
                 } else {
                     redirect("dashboard.php");

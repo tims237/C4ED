@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         // on met à jour les informations de l'utilisateur dans la base de données
-        $stmt = $pdo->prepare("UPDATE utilisateurs SET email = :email, nom = :nom, prenom = :prenom, ville = :ville WHERE id = :id");
+        $stmt = $pdo->prepare("UPDATE users SET email = :email, nom = :nom, prenom = :prenom, ville = :ville WHERE id = :id");
         $stmt->execute([
             ':email' => $email,
             ':nom' => $nom,
@@ -53,10 +53,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         $success = "Profil mis à jour avec succès";
         // Recharge les infos utilisateur
-        $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE id = :id");
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
         $stmt->execute([':id' => $userid]);
         $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
     }
+}
+// Génère le token CSRF si besoin
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 ?>
 <?php if (!empty($success)): ?>
@@ -70,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </ul>
 <?php endif; ?>
 <form action="" method="post">
+    <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
     <div>
         <label for="nom">Nom :</label>
         <input type="text" name="nom" id="nom" value="<?= e($userInfo['nom'] ?? '') ?>">
@@ -86,7 +91,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="email">Email :</label>
         <input type="email" name="email" id="email" value="<?= e($userInfo['email'] ?? '') ?>">
     </div>
-    
-   
     <button type="submit">Mettre à jour</button>
 </form>
