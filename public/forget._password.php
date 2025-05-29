@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (empty($errors)) {
         // on verifie l'email dans la base de donnees 
-        $stmt = $pdo->prepare("SELECT id FROM utilisateurs WHERE email = :email");
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email");
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         $success = "Un email de réinitialisation a été envoyé à $email si cet email est associé à un compte.";

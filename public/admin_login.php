@@ -5,10 +5,12 @@ require_once '../includes/middleware.php';
 require_once '../config/config.php';
 require_once '../includes/authentification.php';
 require_once '../includes/helpers.php';
+
 // on vérifie si l'utilisateur est déjà connecté
 if (is_logged_in() && $_SESSION['user_role'] === 'admin') {
     redirect('admin_panel.php');
 }
+
 // on vérifie si le token CSRF existe
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -19,35 +21,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
     $csrf_token = $_POST['csrf_token'] ?? '';
-    
+
     // on vérifie le token CSRF
     if (empty($csrf_token) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
         $errors[] = "Token CSRF invalide";
     }
-    
+
     // on vérifie si tous les champs sont remplis
     if (empty($email) || empty($password)) {
         $errors[] = 'Veuillez remplir tous les champs';
     }
-    
+
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Email invalide";
     }
-    
+
     // on recherche l'email de l'utilisateur dans la base de données
     if (empty($errors)) {
-        // Adaptation à ta base : table = utilisateurs, champ mot_de_passe
-        $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE email = :email");
+        // Adaptation à ta base : table = users, champ password
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
-        $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
         // si l'utilisateur existe, est admin, et que le mot de passe est correct
-        if ($utilisateur && $utilisateur['role'] === 'admin' && password_verify($password, $utilisateur['mot_de_passe'])) {
-            $_SESSION['user_id'] = $utilisateur['id'];
-            $_SESSION['user_email'] = $utilisateur['email'];
-            $_SESSION['user_role'] = $utilisateur['role'];
-            set_flash('success', 'Connexion réussie !');  
-            // on redirige l'utilisateur vers la page d'accueil
+        if ($user && $user['role'] === 'admin' && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_email'] = $user['email'];
+            $_SESSION['user_role'] = $user['role'];
+            $_SESSION['user_ville'] = $user['ville'];
+            set_flash('success', 'Connexion réussie !');
+            // on redirige l'utilisateur vers la page d'accueil admin
             redirect("admin_panel.php");
         } else {
             $errors[] = 'Identifiants incorrects';

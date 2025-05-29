@@ -1,70 +1,87 @@
 <?php
-//on inclut la base de données
+session_start();
+// on inclut la base de données
 require_once '../config/config.php';
-//on valide les donnees  du formulaire
+// on valide les donnees du formulaire
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom'] ?? '');
     $prenom = trim($_POST['prenom'] ?? '');
+    $ville = trim($_POST['ville'] ?? '');
     $password = trim($_POST['password'] ?? '');
-    $confirm_Password = trim($_POST['confirm_password'] ?? '');
+    $confirm_password = trim($_POST['confirm_password'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    $role = 'user'; 
+    $role = 'client'; // Par défaut, le rôle est client
     $csrf_token = $_POST['csrf_token'] ?? '';
+
     // on verifie le token csrf
     if (empty($csrf_token) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
         $errors[] = "Token CSRF invalide";
     }
     // on doit valider les champs
-    if (empty($nom) || empty($prenom)) {
-        $errors[] = "Nom et prénom sont obligatoires.";
+    if (empty($nom) || empty($prenom) || empty($ville)) {
+        $errors[] = "Nom, prénom et ville sont obligatoires.";
     }
-    // on verifie l'email existe
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        die("Email invalide");
+        $errors[] = "Email invalide";
     }
     if (strlen($password) < 8) {
-        die("Le mot de passe doit contenir au moins 8 caractères");
+        $errors[] = "Le mot de passe doit contenir au moins 8 caractères";
     }
-    if ($password !== $confirm_Password) {
-        die("Les mots de passe ne correspondent pas");
+    if ($password !== $confirm_password) {
+        $errors[] = "Les mots de passe ne correspondent pas";
     }
     // on verifie l'unicite de l'email
     if (empty($errors)) {
-        // on verifie que l'email n'existe pas deja
         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
-        // on lie le parametre email
         $stmt->execute([':email' => $email]);
         if ($stmt->fetch()) {
-            die("L'email existe deja");
+            $errors[] = "L'email existe déjà";
         }
     }
-    // on hash le mot de passe
+    // on hash le mot de passe et on insère l'utilisateur
     if (empty($errors)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
- 
+        $sql = "INSERT INTO users (nom, prenom, ville, email, password, role) VALUES (:nom, :prenom, :ville, :email, :password, :role)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':nom' => $nom,
+            ':prenom' => $prenom,
+            ':ville' => $ville,
+            ':email' => $email,
+            ':password' => $hashedPassword,
+            ':role' => $role
+        ]);
+        unset($_SESSION['csrf_token']);
+        header("Location: login.php?success=1");
+        exit();
     }
-
-    // on confirme le mot de passe en verifiant que mot de passe et la confirmation du mot de passe sont identiques
-    // on recupere le mot de passe et la confirmation du mot de passe
-    $Password = $_POST['password'] ?? '';
-    $confirm_Password = $_POST['confirm_password'] ?? '';
-    if ($Password !== $confirm_Password) {
-        die("Les mots de passe ne correspondent pas");
-    }
-    // on insere l'utilisateur dans la base de donnees
-    $sql = "INSERT INTO users (nom, prenom, email, password, role) VALUES (:nom, :prenom, :email, :password, :role)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':nom' => $nom,
-        ':prenom' => $prenom,
-        ':email' => $email,
-        ':password' => $hashedPassword,
-        ':role' => $role
-    ]);
-    // detruire le token crsf pour eviter la reutilisation
-    unset($_SESSION['csrf_token']);
-    // on redirige l'utilisateur vers la page de connexion
-    header("Location: login.php?success=1");
-    exit();
-    }
+}
+// on genere le token csrf si besoin
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+?>
+<form method="post">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+    <label for="nom">Nom :</label>
+    <input type="text" name="nom" id="nom" required><br>
+    <label for="prenom">Prénom :</label>
+    <input type="text" name="prenom" id="prenom" required><br>
+    <label for="ville">Ville :</label>
+    <input type="text" name="ville" id="ville" required><br>
+    <label for="email">Email :</label>
+    <input type="email" name="email" id="email" required><br>
+    <label for="password">Mot de passe :</label>
+    <input type="password" name="password" id="password" required><br>
+    <label for="confirm_password">Confirmer le mot de passe :</label>
+    <input type="password" name="confirm_password" id="confirm_password" required><br>
+    <button type="submit">S'inscrire</button>
+</form>
+<?php if (!empty($errors)): ?>
+    <ul style="color:red">
+        <?php foreach ($errors as $error): ?>
+            <li><?= htmlspecialchars($error) ?></li>
+        <?php endforeach; ?>
+    </ul>
+<?php endif; ?>

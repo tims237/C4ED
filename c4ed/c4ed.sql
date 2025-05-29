@@ -25,7 +25,7 @@ DROP DATABASE IF EXISTS c4ed;
 CREATE DATABASE c4ed CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE c4ed;
 
--- Table users (au lieu de utilisateurs)
+-- Table users
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
   id INT NOT NULL AUTO_INCREMENT,
@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS users (
   prenom VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
+  ville VARCHAR(100) NOT NULL,           -- <-- Ajout du champ ville
   role ENUM('client','admin') DEFAULT 'client',
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
@@ -49,7 +50,7 @@ CREATE TABLE IF NOT EXISTS password_resets (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- (Optionnel) Table des transactions utilisateurs
+-- Table des transactions utilisateurs
 DROP TABLE IF EXISTS transactions;
 CREATE TABLE IF NOT EXISTS transactions (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -61,7 +62,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- (Optionnel) Table des logs administrateur
+-- Table des logs administrateur
 DROP TABLE IF EXISTS admins_logs;
 CREATE TABLE IF NOT EXISTS admins_logs (
   id INT AUTO_INCREMENT PRIMARY KEY,
