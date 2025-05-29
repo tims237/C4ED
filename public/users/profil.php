@@ -26,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $prenom = trim($_POST['prenom'] ?? '');
     $ville = trim($_POST['ville'] ?? '');
     $csrf_token = $_POST['csrf_token'] ?? '';
+    $new_password = trim($_POST['new_password'] ?? '');
+    $confirm_password = trim($_POST['confirm_password'] ?? '');
 
     // Vérification CSRF
     if (empty($csrf_token) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
@@ -41,16 +43,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Email invalide";
     }
 
+    // Si l'utilisateur souhaite changer son mot de passe
+    $password_sql = '';
+    $params = [
+        ':email' => $email,
+        ':nom' => $nom,
+        ':prenom' => $prenom,
+        ':ville' => $ville,
+        ':id' => $userid
+    ];
+    if (!empty($new_password) || !empty($confirm_password)) {
+        if (strlen($new_password) < 8) {
+            $errors[] = "Le nouveau mot de passe doit contenir au moins 8 caractères";
+        }
+        if ($new_password !== $confirm_password) {
+            $errors[] = "Les mots de passe ne correspondent pas";
+        }
+        if (empty($errors)) {
+            $password_sql = ", password = :password";
+            $params[':password'] = password_hash($new_password, PASSWORD_DEFAULT);
+        }
+    }
+
     if (empty($errors)) {
         // on met à jour les informations de l'utilisateur dans la base de données
-        $stmt = $pdo->prepare("UPDATE users SET email = :email, nom = :nom, prenom = :prenom, ville = :ville WHERE id = :id");
-        $stmt->execute([
-            ':email' => $email,
-            ':nom' => $nom,
-            ':prenom' => $prenom,
-            ':ville' => $ville,
-            ':id' => $userid
-        ]);
+        $sql = "UPDATE users SET email = :email, nom = :nom, prenom = :prenom, ville = :ville $password_sql WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
         $success = "Profil mis à jour avec succès";
         // Recharge les infos utilisateur
         $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
@@ -91,5 +110,16 @@ if (empty($_SESSION['csrf_token'])) {
         <label for="email">Email :</label>
         <input type="email" name="email" id="email" value="<?= e($userInfo['email'] ?? '') ?>">
     </div>
+    <hr>
+    <div>
+        <label for="new_password">Nouveau mot de passe :</label>
+        <input type="password" name="new_password" id="new_password">
+    </div>
+    <div>
+        <label for="confirm_password">Confirmer le nouveau mot de passe :</label>
+        <input type="password" name="confirm_password" id="confirm_password">
+    </div>
+    <small>Laisse les champs mot de passe vides si tu ne veux pas le changer.</small>
+    <br>
     <button type="submit">Mettre à jour</button>
 </form>

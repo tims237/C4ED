@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS users (
   prenom VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
-  ville VARCHAR(100) NOT NULL,           -- <-- Ajout du champ ville
+  ville VARCHAR(100) NOT NULL,
   role ENUM('client','admin') DEFAULT 'client',
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
@@ -50,16 +50,17 @@ CREATE TABLE IF NOT EXISTS password_resets (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table des transactions utilisateurs
+-- Table des transactions utilisateurs (adaptée pour dépôt, retrait, virement)
 DROP TABLE IF EXISTS transactions;
 CREATE TABLE IF NOT EXISTS transactions (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  type ENUM('credit', 'debit') NOT NULL,
-  amount DECIMAL(10,2) NOT NULL,
-  description TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  utilisateur_id INT NOT NULL,
+  type ENUM('depot', 'retrait', 'virement') NOT NULL,
+  montant DECIMAL(10,2) NOT NULL,
+  destinataire_id INT DEFAULT NULL,
+  date_operation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (utilisateur_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (destinataire_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table des logs administrateur
