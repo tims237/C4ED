@@ -1,6 +1,7 @@
 <?php
 session_start();
 // on connecte la base de données
+require_once '../includes/middleware.php';
 require_once '../config/config.php';
 require_once '../includes/authentification.php';
 require_once '../includes/helpers.php';

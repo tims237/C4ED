@@ -7,37 +7,41 @@ c4ed/
 │   └── images/
 │       └── logo.png
 
-├── config/                    # Fichiers de configuration
-│   └── config.php             # Connexion PDO à la base de données
+├── config/                     # Fichiers de configuration
+│   └── config.php              # Connexion PDO à la base de données
 
-├── includes/                  # Fonctions PHP réutilisables
-│   ├── auth.php               # Fonctions d’authentification
-│   └── helpers.php            # Fonctions utilitaires (formatage, etc.)
+├── includes/                   # Fonctions PHP réutilisables
+│   ├── authentification.php    # Fonctions d’authentification (nom cohérent avec le projet)
+│   ├── helpers.php             # Fonctions utilitaires (formatage, sécurité, flash, etc.)
+│   └── middleware.php          # Contrôle d'accès selon le rôle et la connexion
 
-├── templates/                 # Templates HTML communs
-│   ├── header.php             # En-tête HTML (balises <head> et début de <body>)
-│   └── footer.php             # Pied de page HTML (fin du <body>)
+├── templates/                  # Templates HTML communs
+│   ├── header.php              # En-tête HTML (balises <head> et début de <body>)
+│   └── footer.php              # Pied de page HTML (fin du <body>)
 
-├── public/                    # Pages accessibles directement par les utilisateurs
-│   ├── index.php              # Page d’accueil (redirige vers login ou dashboard)
-│   ├── register.php           # Page d'inscription
-│   ├── login.php              # Page de connexion
-│   ├── logout.php             # Déconnexion avec message de sortie
-│   ├── dashboard.php          # Espace utilisateur (après connexion)
-│   ├── profile.php            # Profil de l'utilisateur connecté
-│   ├── forget_password.php    # Demande de réinitialisation de mot de passe
-│   ├── reset_password.php     # Réinitialisation de mot de passe avec token
-│   ├── admin_login.php        # Connexion spécifique pour admin
-│   ├── admin_panel.php        # Interface d’administration (gestion utilisateurs)
-│   └── transactions.php       # Historique ou gestion des transactions
+├── public/                     # Pages accessibles directement par les utilisateurs
+│   ├── index.php               # Page d’accueil (redirige vers login ou dashboard)
+│   ├── register.php            # Page d'inscription
+│   ├── login.php               # Page de connexion utilisateur
+│   ├── logout.php              # Déconnexion utilisateur
+│   ├── dashboard.php           # Espace utilisateur (après connexion)
+│   ├── profile.php             # Profil de l'utilisateur connecté
+│   ├── forget_password.php     # Demande de réinitialisation de mot de passe
+│   ├── reset_password.php      # Réinitialisation de mot de passe avec token
+│   ├── admin_login.php         # Connexion spécifique pour admin
+│   ├── admin_logout.php        # Déconnexion admin
+│   ├── admin_panel.php         # Interface d’administration (gestion utilisateurs)
+│   ├── admin_transactions.php  # Gestion des transactions admin
+│   └── transactions.php        # Historique ou gestion des transactions utilisateur
 
-├── storage/                   # Fichiers temporaires ou pièces jointes (optionnel)
+├── storage/                    # Fichiers temporaires ou pièces jointes (optionnel)
 │   └── logs/
 │       └── error.log
 
-├── .env                       # (optionnel) Variables d’environnement (sécurisées)
-├── .gitignore                 # Fichiers à ignorer dans Git
-├── composer.json              # (optionnel) Dépendances PHP via Composer
-├── README.md                  # Documentation du projet
+├── .env                        # (optionnel) Variables d’environnement (sécurisées)
+├── .gitignore                  # Fichiers à ignorer dans Git
+├── composer.json               # (optionnel) Dépendances PHP via Composer
+├── README.md                   # Documentation du projet
+
 └── database/
-    └── schema.sql             # Script de création des tables SQL
+    └── c4ed.sql                # Script de création des tables SQL (cohérent avec ta base)
