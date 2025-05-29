@@ -2,6 +2,8 @@
     session_start();
     // on connecte la base de données
     require_once '../config/config.php';
+    // on inclut le fichier d'authentification
+    require_once '../includes/authentifation.php';
     // on vérifie si l'utilisateur est connecté
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -21,6 +23,9 @@
             // on vérifie  si tous les champs sont remplis
             if (empty($email)||empty($password)){
                 $errors[] = 'Veuillez remplir tous les champs' ;
+            }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = "Email invalide";
             }
             // on recherche le mail de l'utilisateur dans la base de données
             if (empty($errors)) 
