@@ -42,6 +42,7 @@
 
             if ($utilisateur && password_verify($password, $utilisateur['password'])) 
             {
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $utilisateur['id'];
                 $_SESSION['user_email'] = $utilisateur['email'];
                 $_SESSION['user_role'] = $utilisateur['role'];
