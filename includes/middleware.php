@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 // Rediriger les utilisateurs non connectés qui essaient d'accéder à des pages protégées
 $protectedPages = [

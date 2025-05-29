@@ -1,0 +1,46 @@
+Super Admin Panel
+├── Tableau de bord général                # Vue d'ensemble des statistiques et alertes
+│
+├── Gestion des administrateurs            # CRUD sur les admins
+│   ├── Liste des administrateurs
+│   ├── Ajouter un administrateur
+│   ├── Modifier un administrateur
+│   └── Supprimer un administrateur
+│
+├── Gestion des utilisateurs               # Supervision et gestion globale
+│   ├── Liste des utilisateurs
+│   ├── Recherche/Filtrage par ville
+│   ├── Bloquer/Débloquer un utilisateur
+│   └── Suppression d'utilisateur
+│
+├── Gestion des transactions               # Suivi et contrôle des flux financiers
+│   ├── Toutes les transactions
+│   ├── Recherche/Filtrage par admin ou utilisateur
+│   ├── Annuler/Valider une transaction
+│   └── Exporter les transactions
+│
+├── Statistiques avancées                  # Graphiques, rapports, analyses
+│   ├── Statistiques par ville
+│   ├── Statistiques par période
+│   └── Rapports personnalisés
+│
+├── Paramètres globaux                     # Configuration de la plateforme
+│   ├── Taux/Frais globaux
+│   ├── Gestion des notifications système
+│   └── Sécurité (politiques de mot de passe, logs)
+│
+├── Logs et audit                          # Historique des actions sensibles
+│   ├── Logs des admins
+│   ├── Logs des utilisateurs
+│   └── Export des logs
+│
+├── Support et messages                    # Gestion des tickets/support
+│   ├── Voir les tickets
+│   └── Répondre aux utilisateurs
+│
+└── Déconnexion                            # Quitter le panel super admin
+
+# Chaque section est un module accessible uniquement au super admin.
+# Le super admin a tous les droits sur la plateforme, y compris la gestion des autres admins.
+# Les logs et statistiques permettent un suivi complet de l'activité.
+# Les paramètres globaux impactent toute la plateforme.

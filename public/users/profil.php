@@ -1,13 +1,18 @@
 <?php
 session_start();
-// on connecte la base de données
 require_once '../config/config.php';
-require_once '../includes/middleware.php';
 require_once '../includes/helpers.php';
 require_once '../includes/authentification.php';
-// on charge les informations de l'utilisateur
+
+// Vérifie que l'utilisateur est connecté
+if (empty($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
 $userid = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE id = :id");
+
+// Utilise la bonne table
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
 $stmt->execute([':id' => $userid]);
 $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
 // traitement du formulaire de mise a jour du profil

@@ -48,3 +48,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+?>
+<?php if ($success): ?>
+    <p style="color:green"><?= htmlspecialchars($success) ?></p>
+<?php endif; ?>
+<?php if (!empty($errors)): ?>
+    <ul style="color:red">
+        <?php foreach ($errors as $error): ?>
+            <li><?= htmlspecialchars($error) ?></li>
+        <?php endforeach; ?>
+    </ul>
+<?php endif; ?>
+<form method="post">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+    <label for="email">Votre email :</label>
+    <input type="email" name="email" id="email" required>
+    <button type="submit">Réinitialiser</button>
+</form>
