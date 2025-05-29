@@ -2,7 +2,6 @@
 session_start();
 // on connecte la base de données
 require_once '../config/config.php';
-require_once '../includes/middleware.php';
 $success = '';
 $errors = [];
 
