@@ -7,7 +7,7 @@ $success = '';
 // on verifie si le formulaire est soumis
 $token = $_GET['token'] ?? '';
 if (empty($token)) {
-    $errors[] = "lien de réinitialisation invalide.";
+    $errors[] = "Lien de réinitialisation invalide.";
 }
 // traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -31,25 +31,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         $stmt = $pdo->prepare("SELECT email, expires_at FROM password_resets WHERE token = :token");
         $stmt->execute([':token' => $token]);
         $reset = $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-    if (!$reset || strtotime($reset['expires_at']) < time()) {
-        $errors[] = "Le lien de réinitialisation est invalide ou a expiré.";
-    }else{
-        // mise a jour du mot de passe
-        // on hash le mot de passe
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo ->prepare("UPDATE users SET password = :password WHERE email = :email");
-        $stmt->execute([
-            ':password' => $hashedPassword,
-            ':email' => $reset['email']
-        ]);
-        // on supprime le token de réinitialisation
-        $stmt = $pdo->prepare("DELETE FROM password_resets WHERE token = :token");
-        $stmt->execute([':token' => $token]);
-        $success = "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.";
-        // on redirige l'utilisateur vers la page de connexion
-        header("Location: login.php");
-        exit();
+
+        if (!$reset || strtotime($reset['expires_at']) < time()) {
+            $errors[] = "Le lien de réinitialisation est invalide ou a expiré.";
+        } else {
+            // mise à jour du mot de passe
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            // Adaptation à ta base : table utilisateurs, champ mot_de_passe
+            $stmt = $pdo->prepare("UPDATE utilisateurs SET mot_de_passe = :mot_de_passe WHERE email = :email");
+            $stmt->execute([
+                ':mot_de_passe' => $hashedPassword,
+                ':email' => $reset['email']
+            ]);
+            // on supprime le token de réinitialisation
+            $stmt = $pdo->prepare("DELETE FROM password_resets WHERE token = :token");
+            $stmt->execute([':token' => $token]);
+            $success = "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.";
+        }
     }
 }
 // on genere le token csrf pour le formulaire
@@ -58,14 +56,14 @@ if (empty($_SESSION['csrf_token'])) {
 }
 ?>
 <!-- formulaire -->
- <?php if ($success): ?>
-    <p style ="color:green"><?=htmlspecialchars($success) ?></p>
+<?php if ($success): ?>
+    <p style="color:green"><?= htmlspecialchars($success) ?></p>
     <a href="login.php">Se connecter</a>
 <?php else: ?>
     <?php foreach ($errors as $error): ?>
         <p style="color: red;"><?= htmlspecialchars($error) ?></p>
     <?php endforeach; ?>
-    <?php if (empty($token)): ?>
+    <?php if (!empty($token)): ?>
     <form method="POST">
         <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">

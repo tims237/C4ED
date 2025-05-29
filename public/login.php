@@ -14,7 +14,6 @@
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
-    // on inclut le fichier de configuration
     $errors = [];
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // on récupère les données du formulaire
@@ -26,7 +25,7 @@
             $errors[] = "Token CSRF invalide";
         }
         // on vérifie  si tous les champs sont remplis
-        if (empty($email)||empty($password)){
+        if (empty($email) || empty($password)){
             $errors[] = 'Veuillez remplir tous les champs' ;
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -35,18 +34,17 @@
         // on recherche le mail de l'utilisateur dans la base de données
         if (empty($errors)) 
         {
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
+            $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE email = :email");
             $stmt->execute(['email' => $email]);
             $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
             // si l'utilisateur existe et que le mot de passe est correct
 
-            if ($utilisateur && password_verify($password, $utilisateur['password'])) 
+            if ($utilisateur && password_verify($password, $utilisateur['mot_de_passe'])) 
             {
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = $utilisateur['id'];
                 $_SESSION['user_email'] = $utilisateur['email'];
                 $_SESSION['user_role'] = $utilisateur['role'];
-                // on redirige l'utilisateur vers la page d'accueil
                 // on redirige selon le role 
                 if ($utilisateur['role'] === 'admin') {
                     redirect("admin_panel.php");

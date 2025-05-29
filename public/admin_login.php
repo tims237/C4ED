@@ -35,12 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // on recherche l'email de l'utilisateur dans la base de données
     if (empty($errors)) {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
+        // Adaptation à ta base : table = utilisateurs, champ mot_de_passe
+        $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE email = :email");
         $stmt->execute(['email' => $email]);
         $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        // si l'utilisateur existe et que le mot de passe est correct
-        if ($utilisateur && $utilisateur['role'] === 'admin' && password_verify($password, $utilisateur['password'])) {
+        // si l'utilisateur existe, est admin, et que le mot de passe est correct
+        if ($utilisateur && $utilisateur['role'] === 'admin' && password_verify($password, $utilisateur['mot_de_passe'])) {
             $_SESSION['user_id'] = $utilisateur['id'];
             $_SESSION['user_email'] = $utilisateur['email'];
             $_SESSION['user_role'] = $utilisateur['role'];
@@ -51,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = 'Identifiants incorrects';
         }
     }
-
 }
 // Affichage des messages d'erreur
 display_flash();

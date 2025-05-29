@@ -1,17 +1,22 @@
 <?php
 
-//  info de connexion de la base de donnees 
+// Informations de connexion à la base de données
 $host = 'localhost';
 $dbname = 'c4ed';
 $username = 'root';
 $password = '';
 
-
-// connexion a la base de données
+// Connexion à la base de données
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);//permet de voir les erreurs de requetes
+    // Affiche les erreurs SQL
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Récupère les résultats sous forme de tableau associatif par défaut
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    // Désactive l'émulation des requêtes préparées pour éviter certaines injections SQL
+    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 } catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+    // Ne jamais afficher le détail de l'erreur en production
+    die("Erreur de connexion à la base de données.");
 }
 ?>
