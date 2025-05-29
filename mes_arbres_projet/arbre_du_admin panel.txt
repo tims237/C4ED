@@ -1,0 +1,14 @@
+Admin Panel
+├── Tableau de bord
+├── Utilisateurs
+│   ├── Tous les utilisateurs
+│   └── Ajouter / Modifier / Supprimer
+├── Transactions
+│   ├── Historique
+│   └── Annuler / Valider
+├── Statistiques
+├── Paramètres
+│   ├── Taux / Frais
+│   └── Notifications
+├── Administrateurs
+├── Déconnexion
