@@ -3,7 +3,7 @@
     // on connecte la base de données
     require_once '../config/config.php';
     // on inclut le fichier d'authentification
-    require_once '../includes/authentifation.php';
+    require_once '../includes/authentification.php';
     require_once '../includes/helpers.php';
 
     if (is_logged_in()) {
