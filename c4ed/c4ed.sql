@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   ville VARCHAR(100) NOT NULL,
   role ENUM('client','admin') DEFAULT 'client',
+  seuil_depense DECIMAL(10,2) DEFAULT 0,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   montant DECIMAL(10,2) NOT NULL,
   destinataire_id INT DEFAULT NULL,
   date_operation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  validee TINYINT(1) DEFAULT 1,
   FOREIGN KEY (utilisateur_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (destinataire_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

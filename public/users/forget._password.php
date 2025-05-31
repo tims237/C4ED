@@ -1,6 +1,5 @@
 <?php
 session_start();
-// on connecte la base de données
 require_once '../../config/config.php';
 $success = '';
 $errors = [];
@@ -36,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':expires_at' => $expires_at
             ]);
             // on envoie l'email de réinitialisation
-            $reset_link = "http://localhost/C4ED/public/reset_password.php?token=$token";
+            $reset_link = "http://localhost/C4ED/public/users/reset_password.php?token=$token";
             $subject = "Réinitialisation de mot de passe";
             $message = "Cliquez sur le lien suivant pour réinitialiser votre mot de passe : $reset_link";
             $headers = "From: no-reply@yourdomain.com";
@@ -48,7 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
+// ----------- Début du buffer de contenu -----------
+ob_start();
 ?>
+
+<h2>Mot de passe oublié</h2>
 <?php if ($success): ?>
     <p style="color:green"><?= htmlspecialchars($success) ?></p>
 <?php endif; ?>
@@ -65,3 +69,10 @@ if (empty($_SESSION['csrf_token'])) {
     <input type="email" name="email" id="email" required>
     <button type="submit">Réinitialiser</button>
 </form>
+<p><a href="login.php">Retour à la connexion</a></p>
+
+<?php
+$content = ob_get_clean();
+$title = "Mot de passe oublié";
+include '../../templates/layout.php';
+?>

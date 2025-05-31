@@ -61,11 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
+// ----------- Début du buffer de contenu -----------
+ob_start();
 ?>
-<!-- register.php -->
-<?php
-echo "Page d'inscription (à compléter)";
-?>
+
+<h2>Inscription</h2>
 <form method="post">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
     <label for="nom">Nom :</label>
@@ -89,3 +90,10 @@ echo "Page d'inscription (à compléter)";
         <?php endforeach; ?>
     </ul>
 <?php endif; ?>
+<p><a href="login.php">Déjà inscrit ? Se connecter</a></p>
+
+<?php
+$content = ob_get_clean();
+$title = "Inscription";
+include '../../templates/layout.php';
+?>

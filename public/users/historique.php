@@ -1,8 +1,9 @@
 <?php
 session_start();
-require_once '../config/config.php';
-require_once '../includes/helpers.php';
-require_once '../includes/middleware.php';
+require_once '../../config/config.php';
+require_once '../../includes/authentification.php';
+require_once '../../includes/helpers.php';
+require_once '../../includes/middleware.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -22,7 +23,15 @@ $stmt = $pdo->prepare("
 $stmt->execute(['id' => $userId]);
 $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-include '../templates/header.php';
+// Fonction utilitaire pour afficher l’email de l’émetteur (pour virement reçu)
+function getUserEmailById($pdo, $id) {
+    $stmt = $pdo->prepare("SELECT email FROM users WHERE id = :id");
+    $stmt->execute(['id' => $id]);
+    return $stmt->fetchColumn();
+}
+
+// ----------- Début du buffer de contenu -----------
+ob_start();
 ?>
 
 <h2>Historique complet de vos transactions</h2>
@@ -59,12 +68,10 @@ include '../templates/header.php';
     <?php endif; ?>
 </table>
 
-<?php include '../templates/footer.php'; ?>
+<p><a href="dashboard.php">⬅ Retour au tableau de bord</a></p>
 
 <?php
-function getUserEmailById($pdo, $id) {
-    $stmt = $pdo->prepare("SELECT email FROM users WHERE id = :id");
-    $stmt->execute(['id' => $id]);
-    return $stmt->fetchColumn();
-}
+$content = ob_get_clean();
+$title = "Historique des transactions";
+include '../../templates/layout.php';
 ?>

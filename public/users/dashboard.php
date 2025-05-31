@@ -51,7 +51,17 @@ $stmt->execute(['id' => $userId]);
 $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<?php include '../templates/header.php'; ?>
+<?php
+// Fonction utilitaire pour afficher l’email de l’émetteur (pour virement reçu)
+function getUserEmailById($pdo, $id) {
+    $stmt = $pdo->prepare("SELECT email FROM users WHERE id = :id");
+    $stmt->execute(['id' => $id]);
+    return $stmt->fetchColumn();
+}
+
+// ----------- Début du buffer de contenu -----------
+ob_start();
+?>
 
 <h2>Bienvenue, <?= htmlspecialchars($userPrenom . ' ' . $userNom) ?> (<?= htmlspecialchars($userEmail) ?>)</h2>
 <p>Ville : <strong><?= htmlspecialchars($userVille) ?></strong></p>
@@ -105,13 +115,9 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <li>Modifier vos informations personnelles</li>
 </ul>
 
-<?php include '../templates/footer.php'; ?>
-
 <?php
-// Fonction utilitaire pour afficher l’email de l’émetteur (pour virement reçu)
-function getUserEmailById($pdo, $id) {
-    $stmt = $pdo->prepare("SELECT email FROM users WHERE id = :id");
-    $stmt->execute(['id' => $id]);
-    return $stmt->fetchColumn();
-}
+// ----------- Fin du buffer de contenu -----------
+$content = ob_get_clean();
+$title = "Tableau de bord";
+include '../../templates/layout.php';
 ?>

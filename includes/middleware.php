@@ -43,3 +43,10 @@ if (in_array($currentPage, $adminOnlyPages) && ($_SESSION['user_role'] ?? '') !=
     header('Location: /dashboard.php');
     exit();
 }
+
+function adminOnly() {
+    if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
+        header('Location: ../users/login.php');
+        exit;
+    }
+}
