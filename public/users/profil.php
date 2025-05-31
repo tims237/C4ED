@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '../config/config.php';
-require_once '../includes/helpers.php';
-require_once '../includes/authentification.php';
+require_once '../../config/config.php';
+require_once '../../includes/helpers.php';
+require_once '../../includes/authentification.php';
 
 // Vérifie que l'utilisateur est connecté
 if (empty($_SESSION['user_id'])) {

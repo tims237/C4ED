@@ -1,10 +1,11 @@
 <?php
     session_start();
     // on connecte la base de données
-    require_once '../config/config.php';
+    require_once '../../config/config.php';
     // on inclut le fichier d'authentification
-    require_once '../includes/authentification.php';
-    require_once '../includes/helpers.php';
+    require_once '../../includes/authentification.php';
+    require_once '../../includes/helpers.php';
+    require_once '../../includes/middleware.php';
 
     // Redirige si déjà connecté
     if (is_logged_in()) {
@@ -36,7 +37,6 @@
         }
         // on recherche le mail de l'utilisateur dans la base de données
         if (empty($errors)) {
-            // Utilise la table users et le champ password
             $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
             $stmt->execute(['email' => $email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -73,3 +73,8 @@
     <input type="password" name="password" required><br>
     <button type="submit">Connexion</button>
 </form>
+
+<p>
+    <a href="forget_password.php">Mot de passe oublié ?</a><br>
+    <a href="register.php">S'inscrire</a>
+</p>

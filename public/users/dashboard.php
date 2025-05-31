@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '../config/config.php';
-require_once '../includes/helpers.php';
-require_once '../includes/middleware.php';
+require_once '../../config/config.php';
+require_once '../../includes/helpers.php';
+require_once '../../includes/middleware.php';
 
 // Vérifie que l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
@@ -59,6 +59,7 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <nav style="margin: 20px 0;">
     <a href="../transaction.php">💸 Effectuer une transaction</a> |
+    <a href="historique.php">📄 Historique des transactions</a> |
     <a href="profil.php">👤 Mon profil</a> |
     <a href="logout.php" style="color: red;">🚪 Déconnexion</a>
 </nav>
@@ -100,7 +101,7 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <h3>Que souhaitez-vous faire ?</h3>
 <ul>
     <li>Effectuer un dépôt, retrait ou virement</li>
-    <li>Consulter votre historique</li>
+    <li>Consulter votre historique complet</li>
     <li>Modifier vos informations personnelles</li>
 </ul>
 

@@ -1,7 +1,7 @@
 <?php
 session_start();
 // on inclut la base de données
-require_once '../config/config.php';
+require_once '../../config/config.php';
 // on valide les donnees du formulaire
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -61,6 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+?>
+<!-- register.php -->
+<?php
+echo "Page d'inscription (à compléter)";
 ?>
 <form method="post">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">

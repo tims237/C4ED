@@ -1,10 +1,11 @@
 <?php
 session_start();
 // on connecte la base de données
-require_once '../includes/middleware.php';
-require_once '../config/config.php';
-require_once '../includes/authentification.php';
-require_once '../includes/helpers.php';
+require_once '../../config/config.php';
+// on inclut le fichier d'authentification
+require_once '../../includes/authentification.php';
+require_once '../../includes/helpers.php';
+require_once '../../includes/middleware.php';
 
 // on vérifie si l'utilisateur est déjà connecté
 if (is_logged_in() && $_SESSION['user_role'] === 'admin') {
@@ -38,22 +39,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // on recherche l'email de l'utilisateur dans la base de données
     if (empty($errors)) {
-        // Adaptation à ta base : table = users, champ password
         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // si l'utilisateur existe, est admin, et que le mot de passe est correct
         if ($user && $user['role'] === 'admin' && password_verify($password, $user['password'])) {
+            session_regenerate_id(true);
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
             $_SESSION['user_role'] = $user['role'];
             $_SESSION['user_ville'] = $user['ville'];
             set_flash('success', 'Connexion réussie !');
-            // on redirige l'utilisateur vers la page d'accueil admin
             redirect("admin_panel.php");
         } else {
-            $errors[] = 'Identifiants incorrects';
+            $errors[] = 'Identifiants incorrects ou accès non autorisé.';
         }
     }
 }
@@ -66,11 +66,14 @@ display_errors($errors);
     <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
     <div>
         <label for="email">Email :</label>
-        <input type="email" name="email" id="email" value="<?= e($email ?? '') ?>">
+        <input type="email" name="email" id="email" value="<?= e($email ?? '') ?>" required>
     </div>
     <div>
         <label for="password">Mot de passe :</label>
-        <input type="password" name="password" id="password">
+        <input type="password" name="password" id="password" required>
     </div>
     <button type="submit">Se connecter</button>
 </form>
+<p>
+    <a href="../users/forget_password.php">Mot de passe oublié ?</a>
+</p>
