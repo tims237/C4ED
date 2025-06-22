@@ -25,10 +25,10 @@ $userVille = $user['ville'] ?? '';
 $stmt = $pdo->prepare("
     SELECT SUM(
         CASE 
-            WHEN type = 'depot' THEN montant
-            WHEN type = 'retrait' THEN -montant
-            WHEN type = 'virement' AND utilisateur_id = :id THEN -montant
-            WHEN type = 'virement' AND destinataire_id = :id THEN montant
+            WHEN type = 'depot' THEN amount
+            WHEN type = 'retrait' THEN -amount
+            WHEN type = 'virement' AND utilisateur_id = :id THEN -amount
+            WHEN type = 'virement' AND destinataire_id = :id THEN amount
             ELSE 0
         END
     ) AS solde
@@ -121,3 +121,6 @@ $content = ob_get_clean();
 $title = "Tableau de bord";
 include '../../templates/layout.php';
 ?>
+
+DESCRIBE transactions;
+ALTER TABLE transactions ADD montant DECIMAL(10,2) NOT NULL DEFAULT 0;

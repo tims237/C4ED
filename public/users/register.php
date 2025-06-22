@@ -66,34 +66,73 @@ if (empty($_SESSION['csrf_token'])) {
 ob_start();
 ?>
 
-<h2>Inscription</h2>
-<form method="post">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-    <label for="nom">Nom :</label>
-    <input type="text" name="nom" id="nom" required><br>
-    <label for="prenom">Prénom :</label>
-    <input type="text" name="prenom" id="prenom" required><br>
-    <label for="ville">Ville :</label>
-    <input type="text" name="ville" id="ville" required><br>
-    <label for="email">Email :</label>
-    <input type="email" name="email" id="email" required><br>
-    <label for="password">Mot de passe :</label>
-    <input type="password" name="password" id="password" required><br>
-    <label for="confirm_password">Confirmer le mot de passe :</label>
-    <input type="password" name="confirm_password" id="confirm_password" required><br>
-    <button type="submit">S'inscrire</button>
-</form>
-<?php if (!empty($errors)): ?>
-    <ul style="color:red">
-        <?php foreach ($errors as $error): ?>
-            <li><?= htmlspecialchars($error) ?></li>
-        <?php endforeach; ?>
-    </ul>
-<?php endif; ?>
-<p><a href="login.php">Déjà inscrit ? Se connecter</a></p>
 
+<?php require_once '../../includes/tete.php'; 
+require_once '../../includes/navbar.php'; ?>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="/C4ED/assets/style.css">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="form-bg shadow-lg border border-3 border-success">
+                <h2 class="text-center text-primary mb-4 display-4 fw-bold">Inscription</h2>
+                <p class="text-center mb-4">Veuillez remplir le formulaire ci-dessous pour vous inscrire.</p>
+
+                <?php if (!empty($errors)): ?>
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            <?php foreach ($errors as $error): ?>
+                                <li><?= htmlspecialchars($error) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+
+                <form method="post" class="needs-validation" novalidate>
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+
+                    <div class="mb-3">
+                        <label for="nom" class="form-label fw-bold">Nom</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prenom" class="form-label fw-bold">Prénom</label>
+                        <input type="text" class="form-control" id="prenom" name="prenom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ville" class="form-label fw-bold">Ville</label>
+                        <input type="text" class="form-control" id="ville" name="ville" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold">Adresse Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-bold">Mot de passe</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label fw-bold">Confirmer le mot de passe</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-success w-75">S'inscrire</button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="login.php">Déjà inscrit ? Connexion</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <?php
-$content = ob_get_clean();
-$title = "Inscription";
-include '../../templates/layout.php';
-?>
+include '../../templates/footer.php';
+// ----------- Fin du buffer de contenu -----------
+ob_end_flush();
+
+
+

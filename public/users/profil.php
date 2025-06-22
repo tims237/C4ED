@@ -92,34 +92,46 @@ if (empty($_SESSION['csrf_token'])) {
         <?php endforeach; ?>
     </ul>
 <?php endif; ?>
-<form action="" method="post">
-    <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
-    <div>
-        <label for="nom">Nom :</label>
-        <input type="text" name="nom" id="nom" value="<?= e($userInfo['nom'] ?? '') ?>">
+<?php require_once '../../includes/tete.php'; ?>
+<?php require_once '../../templates/header.php'; ?>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="form-bg shadow-lg border border-3 border-success">
+                <form action="" class="" method="post">
+                    <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom :</label>
+                        <input type="text" class="form-control" name="nom" id="nom" value="<?= e($userInfo['nom'] ?? '') ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="prenom" class="form-label">Prénom :</label>
+                        <input type="text" class="form-control" name="prenom" id="prenom" value="<?= e($userInfo['prenom'] ?? '') ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="ville" class="form-label">Ville :</label>
+                        <input type="text" class="form-control" name="ville" id="ville" value="<?= e($userInfo['ville'] ?? '') ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email :</label>
+                        <input type="email" class="form-control" name="email" id="email" value="<?= e($userInfo['email'] ?? '') ?>">
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">Nouveau mot de passe :</label>
+                        <input type="password" class="form-control" name="new_password" id="new_password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirmer le nouveau mot de passe :</label>
+                        <input type="password" class="form-control" name="confirm_password" id="confirm_password">
+                    </div>
+                    <small class="text-muted">Laisse les champs mot de passe vides si tu ne veux pas le changer.</small>
+                    <br>
+                    <div class="d-flex justify-content-center mt-3">
+                        <button type="submit" class="btn btn-success">Mettre à jour</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-     <div>
-        <label for="prenom">Prénom :</label>
-        <input type="text" name="prenom" id="prenom" value="<?= e($userInfo['prenom'] ?? '') ?>">
-    </div>
-    <div>
-        <label for="ville">Ville :</label>
-        <input type="text" name="ville" id="ville" value="<?= e($userInfo['ville'] ?? '') ?>">
-    </div>
-    <div>
-        <label for="email">Email :</label>
-        <input type="email" name="email" id="email" value="<?= e($userInfo['email'] ?? '') ?>">
-    </div>
-    <hr>
-    <div>
-        <label for="new_password">Nouveau mot de passe :</label>
-        <input type="password" name="new_password" id="new_password">
-    </div>
-    <div>
-        <label for="confirm_password">Confirmer le nouveau mot de passe :</label>
-        <input type="password" name="confirm_password" id="confirm_password">
-    </div>
-    <small>Laisse les champs mot de passe vides si tu ne veux pas le changer.</small>
-    <br>
-    <button type="submit">Mettre à jour</button>
-</form>
+</div>

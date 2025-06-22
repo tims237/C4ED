@@ -1,0 +1,199 @@
+:root {
+    --green-main: #008000;
+    --green-light: #e9f7ef;
+    --green-dark: #005c00;
+    --black: #222;
+    --white: #fff;
+}
+
+/* Reset et base */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--green-light);
+    color: var(--black);
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Titres */
+h1, h2, h3, h4, h5 {
+    color: var(--green-main);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Navbar */
+.navbar {
+    background: var(--green-main) !important;
+    box-shadow: 0 2px 8px #00800022;
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+    color: var(--white) !important;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+}
+
+.navbar-nav .nav-link.active, .navbar-nav .nav-link:focus, .navbar-nav .nav-link:hover {
+    color: var(--green-light) !important;
+    background: var(--green-dark);
+    border-radius: 6px;
+}
+
+.navbar-toggler {
+    border-color: var(--white);
+}
+
+.navbar-toggler-icon {
+    background-image: none;
+    color: var(--white);
+}
+
+/* Footer */
+footer {
+    background: var(--green-main);
+    color: var(--white);
+    text-align: center;
+    padding: 1.5rem 0;
+    margin-top: auto;
+    box-shadow: 0 -2px 8px #00800022;
+    font-size: 1rem;
+}
+
+footer a {
+    color: var(--white);
+    text-decoration: underline;
+    margin: 0 0.5rem;
+}
+
+footer a:hover {
+    color: var(--green-light);
+}
+
+/* Formulaire dynamique */
+.form-bg {
+    background: 
+        linear-gradient(rgba(255,255,255,0.97), rgba(233,247,239,0.97)),
+        url('/C4ED/assets/C4ED_LOGO.jpg') center/120px no-repeat;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    border: 3px solid var(--green-main);
+    box-shadow: 0 6px 24px rgba(0,128,0,0.10);
+    min-height: 420px;
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.form-bg:hover, .form-bg:focus-within {
+    box-shadow: 0 0 32px 8px #00800055;
+    transform: translateY(-6px) scale(1.015);
+}
+
+.form-label {
+    font-weight: bold;
+    color: var(--green-main);
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1.5px solid #ccc;
+    font-size: 1.05rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    border-color: var(--green-main);
+    box-shadow: 0 0 0 0.2rem #00800033;
+    background: #f6fff6;
+}
+
+.btn-success, .btn-primary, .btn-outline-success {
+    background: var(--green-main) !important;
+    border-color: var(--green-main) !important;
+    color: var(--white) !important;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-success:hover, .btn-primary:hover, .btn-outline-success:hover {
+    background: var(--green-dark) !important;
+    border-color: var(--green-dark) !important;
+    color: var(--white) !important;
+    box-shadow: 0 2px 8px #00800033;
+}
+
+.btn:focus, .btn:active {
+    box-shadow: 0 0 0 0.2rem #00800033 !important;
+    border-color: var(--green-main) !important;
+    outline: none !important;
+}
+
+.btn-link {
+    color: var(--green-main);
+    font-weight: 500;
+}
+
+.btn-link:hover {
+    color: var(--green-dark);
+    text-decoration: underline;
+}
+
+/* Table */
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: inherit;
+}
+
+.table-success {
+    background-color: #d1e7dd;
+}
+
+.table th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td, .table th {
+    padding: 0.75rem;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .form-bg {
+        padding: 1.2rem 0.5rem;
+        min-height: 350px;
+    }
+    h1, h2 {
+        font-size: 1.5rem;
+    }
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
