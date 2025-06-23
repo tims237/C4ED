@@ -71,23 +71,24 @@ h2 {
 
 /* Footer */
 footer {
-    background: var(--green-main);
-    color: var(--white);
+    background: #009245;
+    color: #fff;
     text-align: center;
     padding: 1.5rem 0;
     margin-top: auto;
-    box-shadow: 0 -2px 8px #00800022;
+    box-shadow: 0 -2px 8px #00924522;
     font-size: 1rem;
 }
 
 footer a {
-    color: var(--white);
+    color: #fff;
     text-decoration: underline;
     margin: 0 0.5rem;
+    transition: color 0.2s;
 }
 
 footer a:hover {
-    color: var(--green-light);
+    color: #e9f7ef;
 }
 
 /* Formulaire dynamique */

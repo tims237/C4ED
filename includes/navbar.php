@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $user = $_SESSION['user'] ?? null;
 $role = $user['role'] ?? null;
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg" style="background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.07);">
     <div class="container-fluid">
         <a class="navbar-brand" href="<?= $user ? 'home.php' : 'index.php' ?>"> C4ED</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
@@ -51,7 +51,7 @@ $role = $user['role'] ?? null;
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="btn btn-outline-light" href="index.php" tabindex="0">
+                        <a class="btn btn-outline-light" href="login.php" tabindex="0">
                             <i class="fas fa-sign-in-alt me-2"></i>Connexion
                         </a>
                     </li>

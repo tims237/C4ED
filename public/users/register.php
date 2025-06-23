@@ -129,6 +129,11 @@ require_once '../../includes/navbar.php'; ?>
         </div>
     </div>
 </div>
+<div class="d-flex justify-content-center mb-3">
+    <div style="background: #e9f7ef; border-radius: 50%; padding: 20px;">
+        <img src="/C4ED/assets/C4ED_LOGO.jpg" alt="Logo C4ED" style="height: 70px; width: auto;">
+    </div>
+</div>
 <?php
 include '../../templates/footer.php';
 // ----------- Fin du buffer de contenu -----------

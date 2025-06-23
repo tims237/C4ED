@@ -16,6 +16,14 @@ $userId = $_SESSION['user_id'];
 $stmt = $pdo->prepare("SELECT email, prenom, nom, ville FROM users WHERE id = :id");
 $stmt->execute(['id' => $userId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+    // Déconnexion forcée si l'utilisateur n'existe plus
+    session_destroy();
+    header('Location: ../login.php');
+    exit;
+}
+
 $userEmail = $user['email'];
 $userPrenom = $user['prenom'] ?? '';
 $userNom = $user['nom'] ?? '';
@@ -25,17 +33,17 @@ $userVille = $user['ville'] ?? '';
 $stmt = $pdo->prepare("
     SELECT SUM(
         CASE 
-            WHEN type = 'depot' THEN amount
-            WHEN type = 'retrait' THEN -amount
-            WHEN type = 'virement' AND utilisateur_id = :id THEN -amount
-            WHEN type = 'virement' AND destinataire_id = :id THEN amount
+            WHEN type = 'depot' THEN montant
+            WHEN type = 'retrait' THEN -montant
+            WHEN type = 'virement' AND utilisateur_id = :id1 THEN -montant
+            WHEN type = 'virement' AND destinataire_id = :id1 THEN montant
             ELSE 0
         END
     ) AS solde
     FROM transactions 
-    WHERE utilisateur_id = :id OR destinataire_id = :id
+    WHERE utilisateur_id = :id1 OR destinataire_id = :id2
 ");
-$stmt->execute(['id' => $userId]);
+$stmt->execute(['id1' => $userId, 'id2' => $userId]);
 $solde = $stmt->fetchColumn() ?? 0;
 
 // Récupère les 5 dernières transactions
@@ -43,15 +51,13 @@ $stmt = $pdo->prepare("
     SELECT t.*, u.email AS destinataire_email
     FROM transactions t
     LEFT JOIN users u ON t.destinataire_id = u.id
-    WHERE t.utilisateur_id = :id OR t.destinataire_id = :id
+    WHERE t.utilisateur_id = :id1 OR t.destinataire_id = :id2
     ORDER BY t.date_operation DESC
     LIMIT 5
 ");
-$stmt->execute(['id' => $userId]);
+$stmt->execute(['id1' => $userId, 'id2' => $userId]);
 $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
 
-<?php
 // Fonction utilitaire pour afficher l’email de l’émetteur (pour virement reçu)
 function getUserEmailById($pdo, $id) {
     $stmt = $pdo->prepare("SELECT email FROM users WHERE id = :id");
@@ -59,68 +65,97 @@ function getUserEmailById($pdo, $id) {
     return $stmt->fetchColumn();
 }
 
-// ----------- Début du buffer de contenu -----------
-ob_start();
+include '../../includes/tete.php';
+include '../../includes/navbar.php';
 ?>
 
-<h2>Bienvenue, <?= htmlspecialchars($userPrenom . ' ' . $userNom) ?> (<?= htmlspecialchars($userEmail) ?>)</h2>
-<p>Ville : <strong><?= htmlspecialchars($userVille) ?></strong></p>
-<p>Votre solde actuel est de : <strong><?= number_format($solde, 2) ?> €</strong></p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-bg mb-4">
+                <h2 class="text-center mb-3 display-5 fw-bold">
+                    Bienvenue, <?= htmlspecialchars($userPrenom . ' ' . $userNom) ?>
+                </h2>
+                <p class="text-center mb-2">Email : <strong><?= htmlspecialchars($userEmail) ?></strong></p>
+                <p class="text-center mb-2">Ville : <strong><?= htmlspecialchars($userVille) ?></strong></p>
+                <p class="text-center fs-4">
+                    Votre solde actuel est de :
+                    <span class="fw-bold text-success"><?= number_format($solde, 2) ?> €</span>
+                </p>
+                <nav class="d-flex flex-wrap justify-content-center gap-2 my-3">
+                    <a href="../transaction.php" class="btn btn-success">
+                        <i class="fas fa-exchange-alt me-2"></i>Effectuer une transaction
+                    </a>
+                    <a href="historique.php" class="btn btn-outline-dark">
+                        <i class="fas fa-list me-2"></i>Historique des transactions
+                    </a>
+                    <a href="profil.php" class="btn btn-outline-success">
+                        <i class="fas fa-user me-2"></i>Mon profil
+                    </a>
+                    <a href="logout.php" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                    </a>
+                </nav>
+            </div>
 
-<nav style="margin: 20px 0;">
-    <a href="../transaction.php">💸 Effectuer une transaction</a> |
-    <a href="historique.php">📄 Historique des transactions</a> |
-    <a href="profil.php">👤 Mon profil</a> |
-    <a href="logout.php" style="color: red;">🚪 Déconnexion</a>
-</nav>
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="mb-3 text-success fw-bold">Vos 5 dernières transactions</h3>
+                    <?php if ($transactions): ?>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered align-middle">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Montant</th>
+                                        <th>Destinataire</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($transactions as $t): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($t['date_operation']) ?></td>
+                                        <td><?= ucfirst($t['type']) ?></td>
+                                        <td class="<?= ($t['type'] === 'depot' || $t['destinataire_id'] == $userId) ? 'text-success' : 'text-danger' ?>">
+                                            <?= number_format($t['montant'], 2) ?> €
+                                        </td>
+                                        <td>
+                                            <?php
+                                            if ($t['type'] === 'virement') {
+                                                echo $t['utilisateur_id'] == $userId
+                                                    ? 'Vers : ' . htmlspecialchars($t['destinataire_email'])
+                                                    : 'De : ' . htmlspecialchars(getUserEmailById($pdo, $t['utilisateur_id']));
+                                            } else {
+                                                echo '-';
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-center text-muted">Aucune transaction récente.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
 
-<h3>Vos 5 dernières transactions</h3>
-<?php if ($transactions): ?>
-    <table border="1" cellpadding="5">
-        <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Montant</th>
-            <th>Destinataire</th>
-        </tr>
-        <?php foreach ($transactions as $t): ?>
-            <tr>
-                <td><?= htmlspecialchars($t['date_operation']) ?></td>
-                <td><?= ucfirst($t['type']) ?></td>
-                <td style="color: <?= ($t['type'] === 'depot' || $t['destinataire_id'] == $userId) ? 'green' : 'red' ?>">
-                    <?= number_format($t['montant'], 2) ?> €
-                </td>
-                <td>
-                    <?php
-                    if ($t['type'] === 'virement') {
-                        echo $t['utilisateur_id'] == $userId
-                            ? 'Vers : ' . htmlspecialchars($t['destinataire_email'])
-                            : 'De : ' . getUserEmailById($pdo, $t['utilisateur_id']);
-                    } else {
-                        echo '-';
-                    }
-                    ?>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-<?php else: ?>
-    <p>Aucune transaction récente.</p>
-<?php endif; ?>
-
-<h3>Que souhaitez-vous faire ?</h3>
-<ul>
-    <li>Effectuer un dépôt, retrait ou virement</li>
-    <li>Consulter votre historique complet</li>
-    <li>Modifier vos informations personnelles</li>
-</ul>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-3 text-dark fw-bold">Que souhaitez-vous faire ?</h3>
+                    <ul>
+                        <li>Effectuer un dépôt, retrait ou virement</li>
+                        <li>Consulter votre historique complet</li>
+                        <li>Modifier vos informations personnelles</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <?php
-// ----------- Fin du buffer de contenu -----------
-$content = ob_get_clean();
-$title = "Tableau de bord";
-include '../../templates/layout.php';
+include '../../templates/footer.php';
 ?>
-
-DESCRIBE transactions;
-ALTER TABLE transactions ADD montant DECIMAL(10,2) NOT NULL DEFAULT 0;
